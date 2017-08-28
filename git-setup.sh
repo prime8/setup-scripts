@@ -1,6 +1,8 @@
 #!/bin/bash
 
-mkdir ~/.ssh
+set -e
+
+mkdir -p ~/.ssh
 cat <<EOF >> ~/.ssh/config
 Host *
 ConnectTimeout 5
@@ -14,6 +16,7 @@ cat <<EOF > $GITIGNORE_GLOBAL
 .idea
 EOF
 
+# see e.g. https://git-scm.com/book/en/v2/Getting-Started-First-Time-Git-Setup
 git config --global user.email "prime8@users.noreply.github.com"
 git config --global user.name "prime8"
 git config --global color.ui auto

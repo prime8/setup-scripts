@@ -6,9 +6,9 @@ for d in $(find . -mindepth 1 -maxdepth 2 -type d -iname '.git' | sort); do
   if [ "$PULLDIR" == "." ]; then
     PULLDIR=$(pwd | xargs basename)
   fi
-  echo "$(tput setaf 6)$PULLDIR$(tput sgr 0)"
+  echo -n "$(tput setaf 6)$PULLDIR$(tput sgr 0) "
   if ! (git diff-index --quiet HEAD); then
-    git status
+    git status --branch --short
   else
     DEFAULT_BRANCH=$(git branch -av | grep 'origin/HEAD' | awk '{print $3}' | cut -d/ -f2)
     BRANCH=$(test "$DEFAULT_BRANCH" != "" && echo $DEFAULT_BRANCH || echo master)

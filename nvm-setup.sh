@@ -11,12 +11,17 @@ if [[ "$CURRENT_NVM" == "" || "$CURRENT_NVM" != "$LATEST_NVM" ]]; then
   INSTALLER=https://raw.githubusercontent.com/creationix/nvm/$LATEST_NVM/install.sh
   echo "Installing $INSTALLER"
   curl -o- $INSTALLER | bash
+else
+  echo "Using nvm $CURRENT_NVM..."
 fi
 
 if ! ( command -v nvm ); then
   source ~/.nvm/nvm.sh
 fi
 
+set +e
+
 for i in 4 6 8; do 
-  nvm install $i && npm install --global yo npm-check-updates
+  echo "Installing node $i..."
+  nvm install $i && npm install --global npm-check-updates nsp yo
 done

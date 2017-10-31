@@ -15,13 +15,23 @@ else
   echo "Using nvm $CURRENT_NVM..."
 fi
 
-if ! ( command -v nvm ); then
-  source ~/.nvm/nvm.sh
-fi
+source ~/.nvm/nvm.sh
 
 set +e
 
 for i in 4 6 8; do 
-  echo "Installing node $i..."
-  nvm install $i && npm install --global npm-check-updates nsp yo
+  echo "*****************"
+  echo "Setting up node $i"
+  latest=$(nvm version-remote $i)
+  current=$(nvm version $i)
+  if [ "$latest" == "$current" ]; then
+    echo "Latest $i => $latest is already installed"
+    nvm use $i
+  else
+    echo "Installing latest $i => $latest..."
+    nvm install $i
+  fi
+
+  echo "Setting up global packages"
+  npm install --global npm-check-updates nsp yo
 done

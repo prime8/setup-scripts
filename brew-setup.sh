@@ -9,15 +9,17 @@ if ! (which brew 1>/dev/null); then
 else
   brew --version
   echo "Updating..."
-  brew update && brew upgrade; brew cleanup
+  brew update && brew upgrade
 fi
 
-# https://caskroom.github.io
-if ! (brew tap | grep -q 'caskroom/cask'); then
+# https://github.com/Homebrew/homebrew-cask
+if ! (brew tap | grep -q 'homebrew/cask'); then
   echo "Installing caskroom..."
-  brew tap caskroom/cask
+  brew tap homebrew/cask
 else
   brew cask --version
   echo "Checking for out-of-date casks..."
-  brew cask outdated &&  brew cask cleanup
+  brew cask outdated
 fi
+
+brew cleanup

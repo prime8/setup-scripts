@@ -17,7 +17,6 @@ if ! (brew tap | grep -q 'homebrew/cask'); then
   echo "Installing caskroom..."
   brew tap homebrew/cask
 else
-  brew cask --version
   echo "Checking for out-of-date casks..."
   brew cask outdated
 fi

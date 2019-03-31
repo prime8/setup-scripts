@@ -31,7 +31,4 @@ for i in 8 10; do
     echo "Installing latest $i => $latest..."
     nvm install --no-progress $i
   fi
-
-  echo "Setting up global packages"
-  npm install --global npm-check-updates nsp yo
 done

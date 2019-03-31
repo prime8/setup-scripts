@@ -10,7 +10,7 @@ CURRENT_NVM="$(grep '"version":' ~/.nvm/package.json | awk -F\" '{print "v"$(NF-
 if [[ "$CURRENT_NVM" == "" || "$CURRENT_NVM" != "$LATEST_NVM" ]]; then
   INSTALLER=https://raw.githubusercontent.com/creationix/nvm/$LATEST_NVM/install.sh
   echo "Installing $INSTALLER"
-  curl -o- $INSTALLER | bash
+  curl -s -o- $INSTALLER | bash
 else
   echo "Using nvm $CURRENT_NVM..."
 fi
@@ -19,7 +19,7 @@ source ~/.nvm/nvm.sh
 
 set +e
 
-for i in 4 6 8; do 
+for i in 8 10; do 
   echo "*****************"
   echo "Setting up node $i"
   latest=$(nvm version-remote $i)
@@ -29,7 +29,7 @@ for i in 4 6 8; do
     nvm use $i
   else
     echo "Installing latest $i => $latest..."
-    nvm install $i
+    nvm install --no-progress $i
   fi
 
   echo "Setting up global packages"

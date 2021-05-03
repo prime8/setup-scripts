@@ -2,23 +2,18 @@
 
 set -e
 
-# https://brew.sh
 if ! (which brew 1>/dev/null); then
+  echo "Installing xcode command-line tools..."
+  xcode-select --install
+
+  # https://brew.sh
   echo "Installing homebrew..."
-  /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 else
   brew --version
   echo "Updating..."
-  brew update && brew upgrade
+  brew update && brew upgrade --formula
 fi
 
-# https://github.com/Homebrew/homebrew-cask
-if ! (brew tap | grep -q 'homebrew/cask'); then
-  echo "Installing caskroom..."
-  brew tap homebrew/cask
-else
-  echo "Checking for out-of-date casks..."
-  brew cask outdated
-fi
-
-brew cleanup
+echo "Checking for out-of-date casks..."
+brew outdated --cask

@@ -14,7 +14,9 @@ for d in $(find . -mindepth 1 -maxdepth 2 -type d -iname '.git' | sort); do
   else
     DEFAULT_BRANCH=$(git branch -av | grep 'origin/HEAD' | awk '{print $3}' | cut -d/ -f2)
     BRANCH=$(test "$DEFAULT_BRANCH" != "" && echo $DEFAULT_BRANCH || echo master)
-    git checkout $BRANCH --quiet && git fetch --quiet --all --prune && git rebase origin/$BRANCH --verbose
+    git checkout $BRANCH --quiet
+    git fetch --quiet --all --prune
+    git pull --rebase
 
     for merged in $(git branch --merged | egrep -v "$BRANCH|master"); do
       git branch -d $merged

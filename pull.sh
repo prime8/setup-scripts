@@ -1,9 +1,49 @@
 #!/bin/bash
 
+mainbranch () {
+  local HEAD_BRANCH=""
+  local loop=1
+
+  while [ "$HEAD_BRANCH" = "" -a $loop -le 2 ]; do
+    if [ $loop -eq 2 ]; then
+      git remote set-head $1 --auto > /dev/null
+    fi
+    HEAD_BRANCH=$(git branch -av | grep "remotes/$1/HEAD" | awk '{print $3}' | cut -d/ -f2)
+    loop=$(( $loop + 1 ))
+  done
+
+  echo $HEAD_BRANCH
+}
+
+pull () {
+  local REMOTE=$(git remote)
+  if [ "$REMOTE" = "" ]; then
+    echo "-- No remote --"
+    return
+  fi
+
+  git fetch --quiet --all --prune
+
+  local BRANCH=$(mainbranch $REMOTE)
+  if [ "$BRANCH" = "" ]; then
+    echo "-- Unable to determine main branch for remote '$REMOTE' --"
+    return
+  fi
+
+  git checkout $BRANCH --quiet
+  git pull --rebase
+
+  for merged in $(git branch --merged | egrep -v "$BRANCH"); do
+    git branch -d $merged
+  done
+
+  git branch -av | grep '\[gone\]' | awk '{print $1}' | xargs -n 1 git branch -D
+}
+
 for d in $(find . -mindepth 1 -maxdepth 2 -type d -iname '.git' | sort); do
   PULLDIR=$(dirname $d)
   pushd $PULLDIR >/dev/null
-  if [ "$PULLDIR" == "." ]; then
+  if [ "$PULLDIR" = "." ]; then
     PULLDIR=$(pwd | xargs basename)
   fi
 
@@ -12,17 +52,7 @@ for d in $(find . -mindepth 1 -maxdepth 2 -type d -iname '.git' | sort); do
   if ! (git diff-index --quiet HEAD); then
     git status --branch --short
   else
-    DEFAULT_BRANCH=$(git branch -av | grep 'origin/HEAD' | awk '{print $3}' | cut -d/ -f2)
-    BRANCH=$(test "$DEFAULT_BRANCH" != "" && echo $DEFAULT_BRANCH || echo master)
-    git checkout $BRANCH --quiet
-    git fetch --quiet --all --prune
-    git pull --rebase
-
-    for merged in $(git branch --merged | egrep -v "$BRANCH|master"); do
-      git branch -d $merged
-    done
-
-    git branch -av | grep '\[gone\]' | awk '{print $1}' | xargs -n 1 git branch -D
+   pull $PULLDIR
   fi
 
   popd 2>&1 >/dev/null
